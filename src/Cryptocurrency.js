@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import './Cryptocurrency.css'
+import CryptoWallet from './CryptoWallet'
+import { Route } from 'react-router-dom'
 
 class Cryptocurrency extends Component {
 
     state = {
         BTCPrice: 0,
         LTCPrice: 0,
-        DASHPrice: 0,
+        DASHPrice: 0, 
+        addressValue: '',
     }
 
     updatePriceForCurrency = (currencyCode) => {
@@ -20,27 +23,25 @@ class Cryptocurrency extends Component {
             })
     }
 
-    fetchCurrencyData = () => {
+    fetchCurrencyPriceData = () => {
         this.updatePriceForCurrency('BTC')
         this.updatePriceForCurrency('LTC')
         this.updatePriceForCurrency('DASH')
     }
 
-    determineCurrencyType = (address) => {
-        if(address[0] == 'X') {
-            return 'DASH'
-        } else if(address[0] == 'L') {
-            return 'LTC'
-        } else if(address[0] == '1') {
-            return 'BTC'
-        } else if(address[0] == 'D') {
-            return 'DOGE'
-        }
-    }
-
     constructor(props) {
         super(props)
-        this.fetchCurrencyData()
+        this.fetchCurrencyPriceData()
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault()
+        this.props.history.push(`/crypto/${this.state.addressValue}`)
+    }
+
+    handleChange = (event) => {
+        const addressValue = event.currentTarget.value
+        this.setState({ addressValue })
     }
 
     render() {
@@ -64,16 +65,17 @@ class Cryptocurrency extends Component {
                 </div>
                 <h3>Address Lookup</h3>
                 <p>Enter an address for Bitcoin, Litecoin, Dogecoin or Dash</p>
-                <p>Sample addresses: LZcJVFw5osbujGKeQ7YMWGwK7DwMHQFD6s, 15KYSrudJty2Difq3EsTBkWqdzFKUEHqud</p>
+                <p>Sample addresses: LZcJVFw5osbujGKeQ7YMWGwK7DwMHQFD6s, DKAPUWTuUKZm1bggsVULo4vaC88n3So9fY</p>
                 <form onSubmit={this.handleSubmit}>
                     <div>
-                        <input type="text" value={this.state.username} onChange={this.handleChange} />
+                        <input type="text" value={this.state.addressValue} onChange={this.handleChange} />
                     </div>
                     <div>
                         <button type="submit">Look up Wallet Info</button>
                     </div>
                 </form>
-                <h3>Wallet</h3>
+                <Route exact path='/crypto' render={() => <h3>Please enter an address to look up balance info.</h3>} />
+                <Route path='/crypto/:address' component={CryptoWallet} />
             </div>
         )
     }
