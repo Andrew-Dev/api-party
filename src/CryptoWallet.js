@@ -25,6 +25,11 @@ class CryptoWallet extends Component {
             return 'DOGE'
         }
         alert("Invalid address. Must be either a BTC, LTC, DASH or DOGE address for balance lookup.")
+        this.setState({
+            currentCurrency: 'Invalid',
+            currentBalance: 'Cannot get balance - ',
+            currentAddress: 'Must be either a BTC, LTC, DASH or DOGE address for balance lookup.',
+        })
         return null
     }
 
@@ -34,11 +39,19 @@ class CryptoWallet extends Component {
         fetch(`https://chain.so/api/v2/get_address_balance/${this.determineCurrencyType(address)}/${address}`)
             .then((response) => response.json())
             .then((response) => {
-                this.setState({
-                    currentCurrency: response.data.network,
-                    currentBalance: response.data.confirmed_balance,
-                    currentAddress: response.data.address,
-                })
+                if(response.data.network.includes('Network is required')) {
+                    this.setState({
+                        currentCurrency: 'Invalid',
+                        currentBalance: 'Cannot get balance - ',
+                        currentAddress: response.data.address,
+                    })
+                } else {
+                    this.setState({
+                        currentCurrency: response.data.network,
+                        currentBalance: response.data.confirmed_balance,
+                        currentAddress: response.data.address,
+                    })
+                }
             })
     }
 
@@ -47,6 +60,8 @@ class CryptoWallet extends Component {
             this.lookupAddressBalance(nextProps.match.params.address)
         }
     }
+
+    
 
     render() {
         return (
