@@ -16,11 +16,17 @@ class GithubUser extends Component {
     constructor(props) {
         super(props)
 
-        this.fetchUserData()
+        this.fetchUserData(this.props)
     }
 
-    fetchUserData = () => {
-        fetch(`https://api.github.com/users/${this.props.match.params.username}`)
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.location !== this.props.location) {
+            this.fetchUserData(nextProps)
+        }
+    }
+
+    fetchUserData = (props) => {
+        fetch(`https://api.github.com/users/${props.match.params.username}`)
             .then((response) => response.json())
             .then((user) => this.setState({ user }))
     }

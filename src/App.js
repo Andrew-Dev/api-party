@@ -3,6 +3,9 @@ import logo from './logo.svg';
 import { Switch, Route, NavLink } from 'react-router-dom'
 import './App.css';
 import Github from './Github'
+import Nasa from './Nasa'
+import Homework from './Homework'
+import Cryptocurrency from './Cryptocurrency'
 
 class App extends Component {
   render() {
@@ -15,12 +18,24 @@ class App extends Component {
           </div>
           <ul className="nav-links">
             <li>
-              <NavLink to='/github'>GitHub API</NavLink>
+              <NavLink to={'/github'}>Github API</NavLink>
+            </li>
+            <li>
+              <NavLink to={'/nasa'}>NASA API</NavLink>
+            </li>
+            <li>
+              <NavLink to={'/homework'}>Homework</NavLink>
+            </li>
+            <li>
+              <NavLink to={'/crypto'}>Cryptocurrency</NavLink>
             </li>
           </ul>
         </div>
         <Switch>
           <Route path='/github' component={Github} />
+          <Route path='/nasa' component={Nasa} />
+          <Route path='/homework' component={Homework} />
+          <Route path='/crypto' component={Cryptocurrency} />
           <Route render={() => <p>To get started, click one of the links above</p>} />
         </Switch>
       </div>
