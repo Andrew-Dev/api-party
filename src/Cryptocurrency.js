@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Cryptocurrency.css'
 import CryptoWallet from './CryptoWallet'
 import { Route } from 'react-router-dom'
+import CryptoPrice from './CryptoPrice'
 
 class Cryptocurrency extends Component {
 
@@ -9,16 +10,21 @@ class Cryptocurrency extends Component {
         BTCPrice: 0,
         LTCPrice: 0,
         DASHPrice: 0, 
+        ETHPrice: 0,
+        DOGEPrice: 0,
+        XRPPrice: 0,
         addressValue: '',
     }
 
     updatePriceForCurrency = (currencyCode) => {
-        fetch(`https://chain.so/api/v2/get_price/${currencyCode}/USD`)
+        fetch(`https://api.cryptonator.com/api/ticker/${currencyCode}-usd`)
             .then((response) => response.json())
             .then((response) => {
                 console.log(response)
                 const stateChange = {}
-                stateChange[`${currencyCode}Price`] = response.data.prices[0].price
+                let price = response.ticker.price
+                if(currencyCode === 'DOGE') price = price * 1000
+                stateChange[`${currencyCode}Price`] = parseFloat(price).toFixed(2)
                 this.setState(stateChange)
             })
     }
@@ -27,6 +33,9 @@ class Cryptocurrency extends Component {
         this.updatePriceForCurrency('BTC')
         this.updatePriceForCurrency('LTC')
         this.updatePriceForCurrency('DASH')
+        this.updatePriceForCurrency('ETH')
+        this.updatePriceForCurrency('DOGE')
+        this.updatePriceForCurrency('XRP')
     }
 
     constructor(props) {
@@ -44,24 +53,47 @@ class Cryptocurrency extends Component {
         this.setState({ addressValue })
     }
 
+    determineCurrencyMetadata = (type) => {
+        let metadata = {
+            code: type,
+            coinImage: '',
+            coinFullName: '',
+        }
+        if(type === 'BTC') {
+            metadata.coinImage = 'http://www.canbike.org/public/images/030114/Bitcoin_Logo.png'
+            metadata.coinFullName = 'Bitcoin'
+        } else if(type === 'LTC') {
+            metadata.coinImage = 'https://upload.wikimedia.org/wikipedia/commons/a/a8/Official_Litecoin_Logo.png'
+            metadata.coinFullName = 'Litecoin'
+        } else if(type === 'DASH') {
+            metadata.coinImage = 'https://bravenewcoin.com/assets/Coin-Logos/dash.png'
+            metadata.coinFullName = 'Dash'
+        } else if(type === 'DOGE') {
+            metadata.coinImage = 'http://dogecoin.com/imgs/dogecoin-300.png'
+            metadata.coinFullName = 'Dogecoin (per 1000)'
+        } else if(type === 'ETH') {
+            metadata.coinImage = 'https://k60.kn3.net/taringa/3/2/8/3/3/7/Axtron/45C.png'
+            metadata.coinFullName = 'Ethereum'
+        } else if(type === 'XRP') {
+            metadata.coinImage = 'https://ripple.com/wp-content/uploads/2014/10/mark.png'
+            metadata.coinFullName = 'Ripple'
+        } 
+
+        return metadata
+    }
+
     render() {
         return (
             <div className="crypto">
                 <h1>Cryptocurrency</h1>
                 <h3>Prices</h3>
                 <div className="coinPrices">
-                    <div className="coinCell">
-                        <img src="http://www.canbike.org/public/images/030114/Bitcoin_Logo.png"/>
-                        <h3>Bitcoin: ${this.state.BTCPrice}</h3>
-                    </div>
-                    <div className="coinCell">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Official_Litecoin_Logo.png"/>
-                        <h3>Litecoin: ${this.state.LTCPrice}</h3>
-                    </div>
-                    <div className="coinCell">
-                        <img src="https://bravenewcoin.com/assets/Coin-Logos/dash.png"/>
-                        <h3>Dash: ${this.state.DASHPrice}</h3>
-                    </div>
+                    <CryptoPrice price={this.state.BTCPrice} metadata={this.determineCurrencyMetadata('BTC')} />
+                    <CryptoPrice price={this.state.LTCPrice} metadata={this.determineCurrencyMetadata('LTC')} />
+                    <CryptoPrice price={this.state.ETHPrice} metadata={this.determineCurrencyMetadata('ETH')} />
+                    <CryptoPrice price={this.state.DASHPrice} metadata={this.determineCurrencyMetadata('DASH')} />
+                    <CryptoPrice price={this.state.DOGEPrice} metadata={this.determineCurrencyMetadata('DOGE')} />
+                    <CryptoPrice price={this.state.XRPPrice} metadata={this.determineCurrencyMetadata('XRP')} />
                 </div>
                 <h3>Address Lookup</h3>
                 <p>Enter an address for Bitcoin, Litecoin, Dogecoin or Dash</p>

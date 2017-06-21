@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './CryptoWallet.css'
 
 class CryptoWallet extends Component {
 
@@ -23,7 +24,7 @@ class CryptoWallet extends Component {
         } else if(address[0] == 'D') {
             return 'DOGE'
         }
-        alert("Invalid address.")
+        alert("Invalid address. Must be either a BTC, LTC, DASH or DOGE address for balance lookup.")
         return null
     }
 
@@ -49,7 +50,7 @@ class CryptoWallet extends Component {
 
     render() {
         return (
-            <div>
+            <div className="cryptoWallet">
                 <h3>{this.state.currentCurrency} address</h3>
                 <h2>{this.state.currentAddress}</h2>
                 <h2>Balance: {this.state.currentBalance} {this.state.currentCurrency}</h2>
